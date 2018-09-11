@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+<section class="about" id="about">
+    <div class="container text-center">
+        <div id="" class="row">
+            <div class="col-md-12">
+                    <span style="display: inline-block;font-size: 55px;vertical-align: middle">Welcome To NutriCal</span>
+            </div>
+        </div>
+        <br />
+        <div class="row about">
+            <div class="card col-md-5">
+                <div class="card-block">
+                    <h4 class="card-title">Track Calories</h4>
+                    <p class="card-text"><h4 class="abth4">Calories Eaten</h4>Enter/edit/delete the calories you have eaten on the day in breakfast, lunch, dinner and others</p>
+                    <p class="card-text"><h4 class="abth4">Calories Burnt</h4>You can enter/edit/delete the calories you have burnt on a specific day.</p>
+                </div>
+            </div>
+            <div class="card col-md-5 col-md-offset-2">
+                <div class="card-block">
+                    <h4 class="card-title">View Posts</h4>
+                    <p class="card-text"><h4 class="abth4">Posts</h4>You can enter/edit/delete posts about your story and it will be displayed in the website</p>
+                    <p class="card-text"><h4 class="abth4">Comments</h4>You can enter/edit/delete comments to other posts in the website.</p>
+                </div>
+            </div>
+        </div>
+        <br /><br />
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("Register", "Account")'">Get Started Now</button>
+    </div>
+</section>
