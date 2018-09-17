@@ -7,8 +7,9 @@
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 0px !important;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -422,4 +423,45 @@ textarea {
 .square {
     height: 75px;
     width: 75px;
+}
+
+
+td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #d8e7ff;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f05f40;
+    color: white;
+}
+
+.burnt th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04d82e;
+    color: white;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        width: 100%;
+    }
+}
+
+.tableheight{
+    overflow:auto;
+    height:320px;
 }

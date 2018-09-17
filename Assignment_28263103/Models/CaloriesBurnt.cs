@@ -15,6 +15,9 @@ namespace Assignment_28263103.Models
         [StringLength(128)]
         public string UserId { get; set; }
 
+        [Column(TypeName = "date")]
+        public DateTime? Date { get; set; }
+
         [Column("CaloriesBurnt")]
         public double? CaloriesBurnt1 { get; set; }
     }

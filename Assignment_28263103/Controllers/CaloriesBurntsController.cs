@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Assignment_28263103.Models;
+using Microsoft.AspNet.Identity;
 
 namespace Assignment_28263103.Controllers
 {
@@ -46,13 +48,31 @@ namespace Assignment_28263103.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,UserId,CaloriesBurnt1")] CaloriesBurnt caloriesBurnt)
+        public ActionResult Create([Bind(Include = "Id,UserId,CaloriesBurnt1,Date")] CaloriesBurnt caloriesBurnt)
         {
             if (ModelState.IsValid)
             {
+                SqlConnection con1 = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+                DataTable dt = new DataTable();
+                SqlCommand myCommand = new SqlCommand("SELECT TOP 1 Id FROM CaloriesBurnt ORDER BY Id DESC", con1);
+                con1.Open();
+                SqlDataAdapter da = new SqlDataAdapter(myCommand);
+                ////replace with userid from email id
+                da.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    caloriesBurnt.Id = Convert.ToInt32(dt.Rows[0]["id"]) + 1;
+                }
+                caloriesBurnt.UserId = User.Identity.GetUserId();
+                //}
+                //userDetail.UserId = dt.Rows[0].Id;
+                con1.Close();
+                da.Dispose();
+
                 db.CaloriesBurnts.Add(caloriesBurnt);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Redirect("../CaloriesEatens/Index");
+                //return RedirectToAction("Index");
             }
 
             return View(caloriesBurnt);
@@ -78,7 +98,7 @@ namespace Assignment_28263103.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,UserId,CaloriesBurnt1")] CaloriesBurnt caloriesBurnt)
+        public ActionResult Edit([Bind(Include = "Id,UserId,CaloriesBurnt1,Date")] CaloriesBurnt caloriesBurnt)
         {
             if (ModelState.IsValid)
             {

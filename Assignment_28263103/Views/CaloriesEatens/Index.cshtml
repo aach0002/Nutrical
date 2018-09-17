@@ -1,52 +1,151 @@
-﻿@model IEnumerable<Assignment_28263103.Models.CaloriesEaten>
+﻿@model Assignment_28263103.Models.CombinedCalories
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<br />
+<div class="row">
+    <div class="col-md-6">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="col-md-6 text-center">
+        <br /><br /><br />
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "CaloriesEatens")'">Enter Calories Eaten</button>
+        <br /><br /><br />
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "CaloriesBurnts")'">Enter Calories Burnt</button>
+    </div>
+</div>
+<hr />
+<div id="" class="row text-center">
+    <div class="col-md-6">
+        <span style="display: inline-block;font-size: 30px;vertical-align: middle; color:#f05f40">Calories Intake</span>
+    </div>
+    <div class="col-md-6">
+        <span style="display: inline-block;font-size: 30px;vertical-align: middle; color:#04d82e">Calories Burnt</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 tableheight">
+        <table id="customers" class="table">
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Calories Eaten
+                </th>
+                <th></th>
+            </tr>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CaloriesEaten1)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Type)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
-        </th>
-        <th></th>
-    </tr>
+            @foreach (var item in Model.ListA)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CaloriesEaten1)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    </td>
+                </tr>
+            }
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CaloriesEaten1)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
-    }
+        </table>
+    </div>
+    <div class="col-md-6 tableheight">
+        <table class="table burnt">
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Calories Burnt
+                </th>
+                <th></th>
+            </tr>
 
-</table>
+            @foreach (var item in Model.ListB)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CaloriesBurnt1)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Delete", "CaloriesBurnts", new { id = item.Id })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+<br /><br /><br /><br />
+
+
+
+
+@section Scripts {
+<script src="~/Scripts/Chart.min.js"></script>
+    <script>
+        var labels = @Html.Raw(Json.Encode(ViewBag.labels));
+        var eaten = @Html.Raw(Json.Encode(ViewBag.eaten));
+        var burnt = @Html.Raw(Json.Encode(ViewBag.burnt));
+
+        var ctx = document.getElementById("myChart").getContext("2d");
+
+        var data = {
+            labels: labels,
+            datasets: [{
+                label: "Calorie Intake",
+                backgroundColor: "#f05f40",
+                data: eaten
+            }, {
+                label: "Calories Burnt",
+                    backgroundColor: "#04d82e",
+                data: burnt
+            }]
+        };
+
+        var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Intake vs Burnt'
+                },
+                barValueSpacing: 20,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Calories'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }]
+                }
+            }
+        });
+
+    </script>
+}

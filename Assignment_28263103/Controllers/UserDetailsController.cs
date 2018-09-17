@@ -9,6 +9,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Assignment_28263103.Models;
+using Microsoft.AspNet.Identity;
 
 namespace Assignment_28263103.Controllers
 {
@@ -19,6 +20,8 @@ namespace Assignment_28263103.Controllers
         // GET: UserDetails
         public ActionResult Index()
         {
+
+
             return View(db.UserDetails.ToList());
         }
 
@@ -55,7 +58,8 @@ namespace Assignment_28263103.Controllers
                 //sql connection string to be used everywhere
                 SqlConnection con1 = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
                 DataTable dt = new DataTable();
-                SqlCommand myCommand = new SqlCommand("Select * from AspNetUsers where Email=" + userDetail.UserId, con1);
+                string id = User.Identity.GetUserName().ToString();
+                SqlCommand myCommand = new SqlCommand("Select * from AspNetUsers where Email = '" + id + "'", con1);
                 con1.Open();
                 SqlDataAdapter da = new SqlDataAdapter(myCommand);
                 //replace with userid from email id

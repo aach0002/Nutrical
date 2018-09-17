@@ -12,9 +12,11 @@ namespace Assignment_28263103.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Must enter the ammount of calories")]
         [Column("CaloriesEaten")]
         public double? CaloriesEaten1 { get; set; }
 
+        [Required(ErrorMessage = "Must Select a type")]
         [StringLength(1)]
         public string Type { get; set; }
 
