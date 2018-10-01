@@ -17,25 +17,7 @@ namespace Assignment_28263103.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Comment>()
-                .Property(e => e.Comment1)
-                .IsFixedLength();
 
-            modelBuilder.Entity<Comment>()
-                .Property(e => e.DateTime)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Post>()
-                .Property(e => e.Post1)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Post>()
-                .Property(e => e.Approved)
-                .IsFixedLength();
-
-            modelBuilder.Entity<Post>()
-                .Property(e => e.Date)
-                .IsFixedLength();
         }
 
         public System.Data.Entity.DbSet<Assignment_28263103.Models.CaloriesBurnt> CaloriesBurnts { get; set; }

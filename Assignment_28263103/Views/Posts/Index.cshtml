@@ -3,53 +3,56 @@
 @{
     ViewBag.Title = "Index";
 }
-
-<h2>Index</h2>
-
-<div>
-
+<br />
+<div class="row text-center">
+    <div class="col-md-offset-5 col-md-2">
+        <span style="display: inline-block;font-size: 50px;vertical-align: middle;">Stories</span><hr class="hrclass" />
+    </div>
+    <div class="col-md-offset-2 col-md-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Posts")'">Share your Story</button></div>
+</div>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="card col-md-3 col-md-offset-1 post text-right">
+            <div class="card-body text-left">
+                <h5 class="card-title abth4">@item.Title</h5>
+                <p class="card-text">@item.Post1</p>
+                <small style="font-style:italic;font-size:9px;text-align:right">@item.Date</small>
+            </div>
+            <a style="font-style:italic;text-decoration:underline;text-align:right;cursor:pointer" data-toggle="modal" data-target="#exampleModal" data-Title="@item.Title" data-Post="@item.Post1" data-Date="@item.Date">Read More >>></a>
+        </div>
+    }
 </div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Post1)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Approved)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th></th>
-    </tr>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="word-wrap: break-word;">
+                <p id="modelText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Post1)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Approved)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
-        </td>
-    </tr>
+@section Scripts {
+    <script src="~/Scripts/Chart.min.js"></script>
+    <script>
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var Date = button.data('date');
+            var Title = button.data('title');
+            var Post = button.data('post');
+            $("#modalTitle").html(Title);
+            $("#modelText").html(Post);
+        })
+    </script>
 }
-
-</table>

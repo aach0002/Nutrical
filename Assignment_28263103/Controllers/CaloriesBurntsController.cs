@@ -71,6 +71,7 @@ namespace Assignment_28263103.Controllers
 
                 db.CaloriesBurnts.Add(caloriesBurnt);
                 db.SaveChanges();
+                TempData["success"] = "Calories Burnt has been added";
                 return Redirect("../CaloriesEatens/Index");
                 //return RedirectToAction("Index");
             }
@@ -132,7 +133,8 @@ namespace Assignment_28263103.Controllers
             CaloriesBurnt caloriesBurnt = db.CaloriesBurnts.Find(id);
             db.CaloriesBurnts.Remove(caloriesBurnt);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            TempData["success"] = "Calories Burnt has been deleted";
+            return Redirect("../CaloriesEatens/Index");
         }
 
         protected override void Dispose(bool disposing)

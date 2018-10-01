@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace Assignment_28263103.Controllers
 {
+    [Authorize]
     public class PostsController : Controller
     {
         private Comments db = new Comments();
@@ -19,7 +20,54 @@ namespace Assignment_28263103.Controllers
         // GET: Posts
         public ActionResult Index()
         {
-            return View(db.Posts.ToList());
+            var posts = from s in db.Posts
+                           select s;
+
+            posts = posts.Where(s => s.Approved == "true");
+
+            return View(posts.ToList());
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult AdminIndex()
+        {
+            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            List<Post> list_A = new List<Post>();
+            DataTable dt = new DataTable();
+            SqlCommand myCommand = new SqlCommand("SELECT * FROM Posts ", con);
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter(myCommand);
+            da.Fill(dt);
+            list_A = (from DataRow dr in dt.Rows
+                      select new Post()
+                      {
+                          id = Convert.ToInt32(dr["id"]),
+                          Title = dr["Title"].ToString(),
+                          Post1 = dr["Post"].ToString(),
+                          Approved = dr["Approved"].ToString(),
+                          UserId = dr["UserId"].ToString()
+                      }).ToList();
+            con.Close();
+            da.Dispose();
+            ViewBag.list = list_A.ToArray();
+
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult Approve(int? id)
+        {
+            int updated;
+            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            string updSql = "Update Posts set Approved='true' where id=" + id ;
+            con.Open();
+            using (var cmd = new SqlCommand(updSql, con))
+            {
+                updated = cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            TempData["success"] = "Post has been approved";
+            return Redirect("../adminindex");
         }
 
         // GET: Posts/Details/5
@@ -48,9 +96,9 @@ namespace Assignment_28263103.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,UserId,Post1,Approved,Date")] Post post)
+        public ActionResult Create([Bind(Include = "id,UserId,Post1,Approved,Date,Title")] Post post)
         {
-            if (ModelState.IsValid)
+            if (post.Post1 != null)
             {
                 SqlConnection con1 = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
                 DataTable dt = new DataTable();
@@ -64,6 +112,8 @@ namespace Assignment_28263103.Controllers
                     post.id = Convert.ToInt32(dt.Rows[0]["id"]) + 1;
                 }
                 post.UserId = User.Identity.GetUserId();
+                post.Date = DateTime.Now;
+                post.Approved = "none";
                 //}
                 //userDetail.UserId = dt.Rows[0].Id;
                 con1.Close();
@@ -71,6 +121,7 @@ namespace Assignment_28263103.Controllers
 
                 db.Posts.Add(post);
                 db.SaveChanges();
+                TempData["success"] = "Post has been sent for approval";
                 return RedirectToAction("Index");
             }
 

@@ -20,19 +20,20 @@ namespace Assignment_28263103.Models
 
         [Column("Post")]
         [Required]
-        [StringLength(10)]
         public string Post1 { get; set; }
 
         [Required]
         [StringLength(10)]
         public string Approved { get; set; }
 
-        [Column(TypeName = "timestamp")]
-        [MaxLength(8)]
-        [Timestamp]
-        public byte[] Date { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime? Date { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int id { get; set; }
+
+        [Required]
+        public string Title { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }

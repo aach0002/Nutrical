@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 
 namespace Assignment_28263103.Controllers
 {
+    [Authorize]
     public class CaloriesEatensController : Controller
     {
         private Comments db = new Comments();
@@ -21,98 +22,108 @@ namespace Assignment_28263103.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var userId = User.Identity.GetUserId();
+            try
+            {
+                var userId = User.Identity.GetUserId();
 
-            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
-            string id = User.Identity.GetUserName().ToString();
+                SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+                string id = User.Identity.GetUserName().ToString();
 
-            List<CaloriesEaten> list_A = new List<CaloriesEaten>();
-            List<CaloriesBurnt> list_B = new List<CaloriesBurnt>();
+                List<CaloriesEaten> list_A = new List<CaloriesEaten>();
+                List<CaloriesBurnt> list_B = new List<CaloriesBurnt>();
 
-            DataTable dt = new DataTable();
-            SqlCommand myCommand = new SqlCommand("SELECT * FROM CaloriesEaten ORDER BY Date DESC", con);
-            con.Open();
-            SqlDataAdapter da = new SqlDataAdapter(myCommand);
-            da.Fill(dt);
-            list_A = (from DataRow dr in dt.Rows
-                           select new CaloriesEaten()
-                           {
-                               CaloriesEaten1 = Convert.ToInt32(dr["CaloriesEaten"]),
-                               Type = dr["Type"].ToString(),
-                               Date = Convert.ToDateTime(dr["Date"]),
-                           }).ToList();
-            con.Close();
-            da.Dispose();
+                DataTable dt = new DataTable();
+                SqlCommand myCommand = new SqlCommand("SELECT * FROM CaloriesEaten ORDER BY Date DESC", con);
+                con.Open();
+                SqlDataAdapter da = new SqlDataAdapter(myCommand);
+                da.Fill(dt);
+                list_A = (from DataRow dr in dt.Rows
+                          select new CaloriesEaten()
+                          {
+                              CaloriesEaten1 = Convert.ToInt32(dr["CaloriesEaten"]),
+                              Type = dr["Type"].ToString(),
+                              Date = Convert.ToDateTime(dr["Date"]),
+                          }).ToList();
+                con.Close();
+                da.Dispose();
 
-            DataTable dt2 = new DataTable();
-            SqlCommand myCommand2 = new SqlCommand("SELECT * FROM CaloriesBurnt ORDER BY Date DESC", con);
-            con.Open();
-            SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
-            da2.Fill(dt2);
-            list_B = (from DataRow dr in dt2.Rows
-                      select new CaloriesBurnt()
-                      {
-                          CaloriesBurnt1 = Convert.ToInt32(dr["CaloriesBurnt"]),
-                          Date = Convert.ToDateTime(dr["date"]),
-                      }).ToList();
-            con.Close();
-            da2.Dispose();
-            CombinedCalories finalItem = new CombinedCalories();
-            finalItem.ListA = list_A;
-            finalItem.ListB = list_B;
-            Chart();
-            return View(finalItem);
-
-            //var userId = User.Identity.GetUserId();
-
-            
+                DataTable dt2 = new DataTable();
+                SqlCommand myCommand2 = new SqlCommand("SELECT * FROM CaloriesBurnt ORDER BY Date DESC", con);
+                con.Open();
+                SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
+                da2.Fill(dt2);
+                list_B = (from DataRow dr in dt2.Rows
+                          select new CaloriesBurnt()
+                          {
+                              CaloriesBurnt1 = Convert.ToInt32(dr["CaloriesBurnt"]),
+                              Date = Convert.ToDateTime(dr["date"]),
+                          }).ToList();
+                con.Close();
+                da2.Dispose();
+                CombinedCalories finalItem = new CombinedCalories();
+                finalItem.ListA = list_A;
+                finalItem.ListB = list_B;
+                Chart();
+                return View(finalItem);
+            }
+            catch
+            {
+                TempData["error"] = "Something wrong happened please try after sometime";
+                return null;
+            }
         }
 
         public void Chart()
         {
-            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
-            string id = User.Identity.GetUserName().ToString();
-
-            DataTable dt = new DataTable();
-            SqlCommand myCommand = new SqlCommand("SELECT Date,SUM (CaloriesEaten) FROM CaloriesEaten GROUP BY Date;", con);
-            con.Open();
-            SqlDataAdapter da = new SqlDataAdapter(myCommand);
-            da.Fill(dt);
-            con.Close();
-            da.Dispose();
-
-            DataTable dt2 = new DataTable();
-            SqlCommand myCommand2 = new SqlCommand("SELECT Date,SUM (CaloriesBurnt) FROM CaloriesBurnt GROUP BY Date;", con);
-            con.Open();
-            SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
-            da2.Fill(dt2);
-            con.Close();
-            da2.Dispose();
-
-            ArrayList labels = new ArrayList();
-            ArrayList eaten = new ArrayList();
-            ArrayList burnt = new ArrayList();
-
-            foreach (DataRow r1 in dt.Rows)
+            try
             {
-                bool set = false;
-                labels.Add(r1["Date"].ToString().Substring(0, 10));
-                foreach (DataRow r2 in dt2.Rows)
+                SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+                string id = User.Identity.GetUserName().ToString();
+
+                DataTable dt = new DataTable();
+                SqlCommand myCommand = new SqlCommand("SELECT Date,SUM (CaloriesEaten) FROM CaloriesEaten GROUP BY Date;", con);
+                con.Open();
+                SqlDataAdapter da = new SqlDataAdapter(myCommand);
+                da.Fill(dt);
+                con.Close();
+                da.Dispose();
+
+                DataTable dt2 = new DataTable();
+                SqlCommand myCommand2 = new SqlCommand("SELECT Date,SUM (CaloriesBurnt) FROM CaloriesBurnt GROUP BY Date;", con);
+                con.Open();
+                SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
+                da2.Fill(dt2);
+                con.Close();
+                da2.Dispose();
+
+                ArrayList labels = new ArrayList();
+                ArrayList eaten = new ArrayList();
+                ArrayList burnt = new ArrayList();
+
+                foreach (DataRow r1 in dt.Rows)
                 {
-                    if(Convert.ToDateTime(r1["Date"]) == Convert.ToDateTime(r2["Date"]))
+                    bool set = false;
+                    labels.Add(r1["Date"].ToString().Substring(0, 10));
+                    foreach (DataRow r2 in dt2.Rows)
                     {
-                        eaten.Add(r1["Column1"]);
-                        burnt.Add(r2["Column1"]);
+                        if (Convert.ToDateTime(r1["Date"]) == Convert.ToDateTime(r2["Date"]))
+                        {
+                            eaten.Add(r1["Column1"]);
+                            burnt.Add(r2["Column1"]);
+                        }
                     }
+                    eaten.Add(r1["Column1"]);
+                    burnt.Add(0);
                 }
-                eaten.Add(r1["Column1"]);
-                burnt.Add(0);
+
+                ViewBag.labels = labels.ToArray();
+                ViewBag.eaten = eaten.ToArray();
+                ViewBag.burnt = burnt.ToArray();
             }
-
-            ViewBag.labels = labels.ToArray();
-            ViewBag.eaten = eaten.ToArray();
-            ViewBag.burnt = burnt.ToArray();
-
+            catch
+            {
+                TempData["error"] = "Something wrong happened please try after sometime";
+            }
             //ArrayList xValue = new ArrayList();
 
         }
@@ -169,9 +180,9 @@ namespace Assignment_28263103.Controllers
 
                 db.CaloriesEatens.Add(caloriesEaten);
                 db.SaveChanges();
+                TempData["success"] = "Calories Eaten has been added";
                 return RedirectToAction("Index");
             }
-
             return View(caloriesEaten);
         }
 
@@ -231,6 +242,7 @@ namespace Assignment_28263103.Controllers
             CaloriesEaten caloriesEaten = db.CaloriesEatens.Find(id);
             db.CaloriesEatens.Remove(caloriesEaten);
             db.SaveChanges();
+            TempData["success"] = "Calories Eaten has been deleted";
             return RedirectToAction("Index");
         }
 

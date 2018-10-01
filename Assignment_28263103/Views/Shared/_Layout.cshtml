@@ -10,6 +10,44 @@
 
 </head>
 <body>
+    @if (TempData["success"] != null)
+    {
+        <div id="success" class="alert alert-success" role="alert" style="position:absolute;right:20px;top:10px;z-index:1300">
+            <div class="row">
+                <div class="col-xs-9 text-left" style="display:inline-flex">
+                    <span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;&nbsp;
+                    <h4 class="alert-heading">Success!!!</h4>
+                </div>
+                <div class="col-xs-3">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="">
+                <strong>@TempData["success"].ToString()</strong>
+            </div>
+        </div>
+    }
+    @if (TempData["error"] != null)
+    {
+        <div id="error" class="alert alert-danger" role="alert" style="position:absolute;right:20px;top:10px;z-index:1300">
+            <div class="row">
+                <div class="col-xs-9 text-left" style="display:inline-flex">
+                    <span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;&nbsp;
+                    <h4 class="alert-heading">Error!!!</h4>
+                </div>
+                <div class="col-xs-3">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="">
+                <strong>@TempData["error"].ToString()</strong>
+            </div>
+        </div>
+    }
     <div class="navbar navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -29,7 +67,11 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="active" id="about">@Html.ActionLink("About Us", "About", "Home")</li>
-                    @if (User.Identity.IsAuthenticated)
+                    @if (this.User.IsInRole("Admin"))
+                    {
+                        <li>@Html.ActionLink("Approve Stories", "adminindex", "Posts")</li>
+                    }
+                    else if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Track Calories", "Index", "CaloriesEatens")</li>
                         <li>@Html.ActionLink("Stories", "Index", "Posts")</li>
@@ -41,7 +83,6 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-
     </div>
     <footer class="site-footer">
 
@@ -55,5 +96,10 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/script")
     @RenderSection("scripts", required: false)
+    <script>
+        $(".alert").delay(5000).slideUp(200, function () {
+            $(this).alert('close');
+        });
+    </script>
 </body>
 </html>
