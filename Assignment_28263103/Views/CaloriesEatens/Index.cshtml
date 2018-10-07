@@ -4,12 +4,74 @@
     ViewBag.Title = "Index";
 }
 
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
 <br />
+
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3 text-center">
+        @using (Html.BeginForm("Index", "CaloriesEatens", FormMethod.Get))
+        {
+        <div class="row border text-center">
+            <div class="radio text-left">
+                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="optradio" checked>Date</label>
+            </div>
+            <div class="col-md-12">
+                <label for="StartDate">From</label>
+                <input type="text" id="StartDate" style="width: 120px" class="form-control displayinline" name="start">
+                <label for="EndDate">to</label>
+                <input type="text" id="EndDate" style="width: 120px" class="form-control displayinline" name="end">
+            </div>
+
+            <br /><br /><br />and<br />
+            <div class="radio text-left">
+                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt1radio">Calories Eaten</label>
+            </div>
+            <input type="text" style="display:none" id="eatennone" name="eaten" value=">0"/>
+            <input type="text" style="display:none" id="burntnone" name="burnt" value=">0"/>
+            <div class="col-lg-3 text-left">
+                <label>Calories Eaten</label>
+            </div>
+            <div class="col-lg-5 text-left">
+                <label class="radio-inline"><input type="radio" value="0" name="eatenradio" checked>greater than</label>
+                <label class="radio-inline"><input type="radio" value="1" name="eatenradio">equal to</label>
+                <label class="radio-inline"><input type="radio" value="2" name="eatenradio">less than</label>
+                <div class="text-center">
+                    <br /> or <br /><br />
+                </div>
+            </div>
+            <div class="col-lg-4 text-left">
+                <input type="number" id="eaten" style="width: 100px" class="form-control displayinline" value="0">
+            </div>
+
+            <br /><br />
+            <div class="radio text-left">
+                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt1radio">Calories Burnt</label>
+            </div>
+            <div class="col-lg-3 text-left">
+                <label>Calories Burnt</label>
+            </div>
+            <div class="col-lg-5 text-left">
+                <label class="radio-inline"><input type="radio" value="0" name="burntradio" checked>greater than</label>
+                <label class="radio-inline"><input type="radio" value="1" name="burntradio">equal to</label>
+                <label class="radio-inline"><input type="radio" value="2" name="burntradio">less than</label>
+            </div>
+            <div class="col-lg-4 text-left">
+                <input type="number" id="burnt" style="width: 100px" class="form-control displayinline" value="0">
+            </div>
+            <br /><br /><br />
+            <div class="col-md-12 text-right">
+                <input type="button" class="btn-sm btn-default" value="Reset" />
+                <input type="submit" class="btn-sm btn-primary" value="Filter" />
+            </div>
+        </div>
+    }
+        </div>
+    <div class="col-md-7">
         <canvas id="myChart"></canvas>
     </div>
-    <div class="col-md-6 text-center">
+    <div class="col-md-2 text-center">
         <br /><br /><br />
         <button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "CaloriesEatens")'">Enter Calories Eaten</button>
         <br /><br /><br />
@@ -17,25 +79,19 @@
     </div>
 </div>
 <hr />
-<div id="" class="row text-center">
-    <div class="col-md-6">
-        <span style="display: inline-block;font-size: 30px;vertical-align: middle; color:#f05f40">Calories Intake</span>
-    </div>
-    <div class="col-md-6">
-        <span style="display: inline-block;font-size: 30px;vertical-align: middle; color:#04d82e">Calories Burnt</span>
-    </div>
-</div>
-<div class="row">
+
+<div class="row text-center">
     <div class="col-md-6 tableheight" style="margin-top:20px;">
+        <span style="margin-bottom:20px;display: inline-block;font-size: 30px;vertical-align: middle; color:#f05f40">Calories Intake</span>
         <table id="customers" class="table">
             <tr>
-                <th>
+                <th class="text-center">
                     Date
                 </th>
-                <th>
+                <th class="text-center">
                     Type
                 </th>
-                <th>
+                <th class="text-center">
                     Calories Eaten
                 </th>
                 <th></th>
@@ -45,7 +101,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Date).ToString().Substring(0,10)
+                        @Html.DisplayFor(modelItem => item.Date).ToString().Substring(0, 10)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Type)
@@ -63,12 +119,13 @@
         </table>
     </div>
     <div class="col-md-6 tableheight" style="margin-top:20px;">
+        <span style="margin-bottom:20px;display: inline-block;font-size: 30px;vertical-align: middle; color:#04d82e">Calories Burnt</span>
         <table class="table burnt">
             <tr>
-                <th>
+                <th class="text-center">
                     Date
                 </th>
-                <th>
+                <th class="text-center">
                     Calories Burnt
                 </th>
                 <th></th>
@@ -96,12 +153,13 @@
 
 
 @section Scripts {
-<script src="~/Scripts/Chart.min.js"></script>
+    <script src="~/Scripts/Chart.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script>
         var labels = @Html.Raw(Json.Encode(ViewBag.labels));
         var eaten = @Html.Raw(Json.Encode(ViewBag.eaten));
         var burnt = @Html.Raw(Json.Encode(ViewBag.burnt));
-
+        console.log(burnt,eaten);
         var ctx = document.getElementById("myChart").getContext("2d");
 
         var data = {
@@ -145,6 +203,100 @@
                 }
             }
         });
+
+        $(function () {
+            var today = new Date(),
+                weekAgo = new Date(),
+                $from = $("#StartDate"),
+                $to = $("#EndDate");
+
+            weekAgo.setDate(today.getDate() - 7);
+
+            $from.datepicker({
+                maxDate: today,
+                onSelect: function (dateText) {
+                    $to.datepicker("option", "minDate", dateText);
+                }
+            }).datepicker('setDate', weekAgo);
+
+            $to.datepicker({
+                maxDate: today,
+                minDate: weekAgo,
+                onSelect: function (dateText) {
+                    $from.datepicker("option", "maxDate", dateText);
+                }
+            }).datepicker('setDate', today);
+
+        });
+
+        $("#eaten").blur(function () {
+            var eatenradio = document.getElementsByName('eatenradio');
+            var val = "";
+            for (var i = 0; i < eatenradio.length; i++) {
+                if (eatenradio[i].checked) {
+                    val = returnSign(eatenradio[i].value);
+                    break;
+                }
+            }
+            $("#eatennone").val(val + $("#eaten").val())
+        });
+
+        $('input[name=eatenradio]').on('change', function () {
+            var eatenradio = document.getElementsByName('eatenradio');
+            var val = "";
+            for (var i = 0; i < eatenradio.length; i++) {
+                if (eatenradio[i].checked) {
+                    val = returnSign(Number(eatenradio[i].value));
+                    break;
+                }
+            }
+            $("#eatennone").val(val + $("#eaten").val())
+        });
+
+        $("#burnt").blur(function () {
+            var burntradio = document.getElementsByName('burntradio');
+            var val = "";
+            for (var i = 0; i < burntradio.length; i++) {
+                if (burntradio[i].checked) {
+                    val = returnSign(burntradio[i].value);
+                    break;
+                }
+            }
+            $("#burntnone").val(val + $("#burnt").val())
+        });
+
+        $('input[name=burntradio]').on('change', function () {
+            var burntradio = document.getElementsByName('burntradio');
+            var val = "";
+            for (var i = 0; i < burntradio.length; i++) {
+                if (burntradio[i].checked) {
+                    val = returnSign(Number(burntradio[i].value));
+                    break;
+                }
+            }
+            $("#burntnone").val(val + $("#burnt").val())
+        });
+
+        $('input[name=opt1radio]').on('change', function () {
+            var opt1radio = document.getElementsByName('opt1radio');
+            //var val = "";
+            for (var i = 0; i < opt1radio.length; i++) {
+                if (opt1radio[i].checked) {
+                    
+                } else {
+                    if (Number(burntradio[i].value) == 0)
+                        $("#eatennone").val(">0")
+                    else
+                        $("#burntnone").val(">0")
+                }
+            }
+        });
+
+        function returnSign(id) {
+            var msg = "";
+            id == 2 ? msg = "<" : id == 0 ? msg = ">" : msg = "=";
+            return msg;
+        }
 
     </script>
 }

@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using Assignment_28263103.Models;
 using Microsoft.AspNet.Identity;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace Assignment_28263103.Controllers
 {
@@ -16,6 +18,7 @@ namespace Assignment_28263103.Controllers
     public class PostsController : Controller
     {
         private Comments db = new Comments();
+        private const String API_KEY = "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";
 
         // GET: Posts
         public ActionResult Index()
@@ -44,7 +47,7 @@ namespace Assignment_28263103.Controllers
                           id = Convert.ToInt32(dr["id"]),
                           Title = dr["Title"].ToString(),
                           Post1 = dr["Post"].ToString(),
-                          Approved = dr["Approved"].ToString(),
+                          Approved = dr["Approved"].ToString().TrimEnd(),
                           UserId = dr["UserId"].ToString()
                       }).ToList();
             con.Close();
@@ -55,7 +58,7 @@ namespace Assignment_28263103.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult Approve(int? id)
+        public ActionResult Approve(int? id , string email)
         {
             int updated;
             SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
@@ -66,7 +69,40 @@ namespace Assignment_28263103.Controllers
                 updated = cmd.ExecuteNonQuery();
             }
             con.Close();
-            TempData["success"] = "Post has been approved";
+            TempData["success"] = "Post has been approved and Email has been sent";
+
+            string mailid = "";
+            string title = "";
+            string content = "";
+            SqlConnection con1 = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            DataTable dt = new DataTable();
+            SqlCommand myCommand = new SqlCommand("Select Email from AspNetUsers where Id='" + email + "'", con1);
+            con1.Open();
+            SqlDataAdapter da = new SqlDataAdapter(myCommand);
+            da.Fill(dt);
+            if (dt.Rows.Count > 0)
+            {
+                mailid = Convert.ToString(dt.Rows[0]["Email"]);
+            }
+            DataTable dt2 = new DataTable();
+            SqlCommand myCommand1 = new SqlCommand("Select * from Posts where id = " + id, con1);
+            SqlDataAdapter da1 = new SqlDataAdapter(myCommand1);
+            da1.Fill(dt2);
+            if (dt2.Rows.Count > 0)
+            {
+                title = Convert.ToString(dt2.Rows[0]["Title"]);
+                content = Convert.ToString(dt2.Rows[0]["Post"]);
+            }
+            con1.Close();
+            da.Dispose();
+
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("nutricalinfo@gmail.com", "NUTRICAL Post Approval");
+            var to = new EmailAddress(mailid, "");
+            var plainTextContent = "Congratulations !!! Your post has been approved by the Nutrical Admin. It will be available for all the users to read.";
+            var htmlContent = "<p>Hi User,</p><p>" + plainTextContent + "</p><h1>" + title +"</h1><p>" + content + "</p><p>Regards, Nutrical Admin</p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, " NUTRICAL Post Approval ", plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
             return Redirect("../adminindex");
         }
 

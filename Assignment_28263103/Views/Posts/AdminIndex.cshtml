@@ -44,9 +44,16 @@
                 <td style="width:10%">
                     @item.UserId
                 </td>
-                <td style="width:10%">
-                        <a data-toggle="modal" data-target="#exampleModal" data-id="@item.id">Approve</a>    
-                </td>
+                @if (@item.Approved != "true")
+                {
+                    <td style="width:10%">
+                        <button class="btn-sm btn-primary" data-toggle="modal"  data-target="#exampleModal" data-id="@item.id" data-email="@item.UserId">Approve</button>
+                    </td>
+                } else
+                {
+                    <td></td>
+                }
+
             </tr>
             }
 
@@ -112,15 +119,18 @@
             });
         });
         var id = 0;
+        var email = "";
         $('#exampleModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget)
             id = button.data('id');
+            email = button.data('email');
         });
 
         function myclick() {
             //alert(12345);
-            var url = '@Url.Action("Approve", "Posts", new { id = "USER_ID"})';
+            var url = '@Url.Action("Approve", "Posts", new { id = "USER_ID" , email = "email_ID" })';
             url = url.replace("USER_ID", id);
+            url = url.replace("email_ID", email);
             //alert(url); //just for debugging
             window.location.href = url;
         }

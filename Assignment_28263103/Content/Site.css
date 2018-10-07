@@ -316,6 +316,21 @@ textarea {
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
 }
 
+.btn-sm {
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    margin: .5rem;
+    border: 0;
+    -webkit-border-radius: .125rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding-left: 15px;
+    padding-right: 15px;
+    white-space: normal;
+    font-size: 14px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+}
+
 .margin-right {
     margin-right: 20px;
 }
@@ -533,4 +548,18 @@ post .abth4 {
 .wrap {
     word-wrap: break-word !important;
     word-break:break-word;
+}
+
+.displayinline{
+    display:inline !important;
+}
+
+.border {
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+    border-radius: .5rem;
+    padding: 15px;
+}
+
+.radio-inline{
+    margin-left : 0px  !important;
 }

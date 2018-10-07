@@ -20,7 +20,7 @@ namespace Assignment_28263103.Controllers
 
         // GET: CaloriesEatens
         [Authorize]
-        public ActionResult Index()
+        public ActionResult Index(string start, string end , string eaten , string burnt)
         {
             try
             {
@@ -32,8 +32,35 @@ namespace Assignment_28263103.Controllers
                 List<CaloriesEaten> list_A = new List<CaloriesEaten>();
                 List<CaloriesBurnt> list_B = new List<CaloriesBurnt>();
 
+                string datestart = "";
+                string dateend = "";
+                if (start == null && end == null)
+                {
+                    DateTime currentDate = DateTime.Now.Date;
+                    DateTime dateWeekBefore = currentDate.AddDays(-7);
+                    datestart = dateWeekBefore.ToString("yyyy/MM/dd").Substring(0, 10);
+                    dateend = currentDate.ToString("yyyy/MM/dd").Substring(0, 10); 
+                    //Chart(currentDate.ToString("yyyy/MM/dd").Substring(0, 10), dateWeekBefore.ToString("yyyy/MM/dd").Substring(0, 10));
+                }
+                else
+                {
+                    string[] startarray = start.Split('/');
+                    datestart = startarray[2] + '-' + startarray[0] + '-' + startarray[1];
+                    string[] endarray = end.Split('/');
+                    dateend = endarray[2] + '-' + endarray[0] + '-' + endarray[1];
+                    //Chart(startd, endd);
+                }
+
+                if (eaten == null)
+                    eaten = ">0";
+
+                if (burnt == null)
+                    burnt = ">0";
+
+                Chart(datestart, dateend , eaten , burnt);
+
                 DataTable dt = new DataTable();
-                SqlCommand myCommand = new SqlCommand("SELECT * FROM CaloriesEaten ORDER BY Date DESC", con);
+                SqlCommand myCommand = new SqlCommand("SELECT * FROM CaloriesEaten where UserId = '" + userId + "' and Date <= '" + dateend + "' and Date >= '" + datestart + "' and CaloriesEaten " + eaten + " order by Date desc", con);
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter(myCommand);
                 da.Fill(dt);
@@ -48,7 +75,7 @@ namespace Assignment_28263103.Controllers
                 da.Dispose();
 
                 DataTable dt2 = new DataTable();
-                SqlCommand myCommand2 = new SqlCommand("SELECT * FROM CaloriesBurnt ORDER BY Date DESC", con);
+                SqlCommand myCommand2 = new SqlCommand("SELECT * FROM CaloriesBurnt where UserId = '" + userId + "' and Date <= '" + dateend + "' and Date >= '" + datestart + "' and CaloriesBurnt " + burnt + " order by Date desc", con);
                 con.Open();
                 SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
                 da2.Fill(dt2);
@@ -63,7 +90,7 @@ namespace Assignment_28263103.Controllers
                 CombinedCalories finalItem = new CombinedCalories();
                 finalItem.ListA = list_A;
                 finalItem.ListB = list_B;
-                Chart();
+                
                 return View(finalItem);
             }
             catch
@@ -73,15 +100,22 @@ namespace Assignment_28263103.Controllers
             }
         }
 
-        public void Chart()
+        public void Chart(string startDate, string endDate, string eatens, string burnts)
         {
             try
             {
+                var userId = User.Identity.GetUserId();
                 SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
                 string id = User.Identity.GetUserName().ToString();
 
+                //string[] startarray = startDate.Split('/');
+                //string start = startarray[2] + '-' + startarray[0] + '-' + startarray[1];
+                //string[] endarray = endDate.Split('/');
+                //string end = endarray[2] + '-' + endarray[0] + '-' + endarray[1];
+
                 DataTable dt = new DataTable();
-                SqlCommand myCommand = new SqlCommand("SELECT Date,SUM (CaloriesEaten) FROM CaloriesEaten GROUP BY Date;", con);
+                SqlCommand myCommand = new SqlCommand("SELECT Date,SUM (CaloriesEaten) FROM CaloriesEaten where UserId = '" + userId + "' and Date <= '" + endDate + "' and Date >= '" + startDate + "' and CaloriesEaten " + eatens + " GROUP BY Date order by Date desc", con);
+                //SqlCommand myCommand = new SqlCommand("SELECT Date,SUM (CaloriesEaten) FROM CaloriesEaten where UserId = '" + userId + "' GROUP BY Date order by Date desc", con);
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter(myCommand);
                 da.Fill(dt);
@@ -89,7 +123,8 @@ namespace Assignment_28263103.Controllers
                 da.Dispose();
 
                 DataTable dt2 = new DataTable();
-                SqlCommand myCommand2 = new SqlCommand("SELECT Date,SUM (CaloriesBurnt) FROM CaloriesBurnt GROUP BY Date;", con);
+                SqlCommand myCommand2 = new SqlCommand("SELECT Date,SUM (CaloriesBurnt) FROM CaloriesBurnt where UserId = '" + userId + "' and Date <= '" + endDate + "' and Date >= '" + startDate + "' and CaloriesBurnt " + burnts + " GROUP BY Date order by Date desc", con);
+                //SqlCommand myCommand2 = new SqlCommand("SELECT Date,SUM (CaloriesBurnt) FROM CaloriesBurnt where UserId = '" + userId + "' GROUP BY Date order by Date desc", con);
                 con.Open();
                 SqlDataAdapter da2 = new SqlDataAdapter(myCommand2);
                 da2.Fill(dt2);
@@ -106,14 +141,28 @@ namespace Assignment_28263103.Controllers
                     labels.Add(r1["Date"].ToString().Substring(0, 10));
                     foreach (DataRow r2 in dt2.Rows)
                     {
-                        if (Convert.ToDateTime(r1["Date"]) == Convert.ToDateTime(r2["Date"]))
+                        if (Convert.ToDateTime(r1["Date"]) == Convert.ToDateTime(r2["Date"]) && !set)
                         {
                             eaten.Add(r1["Column1"]);
                             burnt.Add(r2["Column1"]);
+                            set = true;
                         }
                     }
-                    eaten.Add(r1["Column1"]);
-                    burnt.Add(0);
+                    if (!set)
+                    {
+                        eaten.Add(r1["Column1"]);
+                        burnt.Add(0);
+                    }
+                }
+
+                foreach (DataRow r2 in dt2.Rows)
+                {
+                    if (labels.Contains(r2["Date"].ToString().Substring(0, 10)) == false)
+                    {
+                        labels.Add(r2["Date"].ToString().Substring(0, 10));
+                        eaten.Add(0);
+                        burnt.Add(r2["Column1"]);
+                    }
                 }
 
                 ViewBag.labels = labels.ToArray();
@@ -172,7 +221,7 @@ namespace Assignment_28263103.Controllers
                 {
                     caloriesEaten.Id = Convert.ToInt32(dt.Rows[0]["id"]) + 1;
                 }
-                    caloriesEaten.UserId = User.Identity.GetUserId();
+                caloriesEaten.UserId = User.Identity.GetUserId();
                 //}
                 //userDetail.UserId = dt.Rows[0].Id;
                 con1.Close();
