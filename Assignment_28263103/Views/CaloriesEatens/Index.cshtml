@@ -26,7 +26,7 @@
 
             <br /><br /><br />and<br />
             <div class="radio text-left">
-                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt1radio">Calories Eaten</label>
+                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt1radio" checked>Calories Eaten</label>
             </div>
             <input type="text" style="display:none" id="eatennone" name="eaten" value=">0"/>
             <input type="text" style="display:none" id="burntnone" name="burnt" value=">0"/>
@@ -47,7 +47,7 @@
 
             <br /><br />
             <div class="radio text-left">
-                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt1radio">Calories Burnt</label>
+                <label style="font-size:20px;color:black;font-weight:normal"><input type="radio" name="opt2radio" checked>Calories Burnt</label>
             </div>
             <div class="col-lg-3 text-left">
                 <label>Calories Burnt</label>
@@ -204,7 +204,7 @@
             }
         });
 
-        $(function () {
+        function setDate() {
             var today = new Date(),
                 weekAgo = new Date(),
                 $from = $("#StartDate"),
@@ -227,7 +227,7 @@
                 }
             }).datepicker('setDate', today);
 
-        });
+        };
 
         $("#eaten").blur(function () {
             var eatenradio = document.getElementsByName('eatenradio');
@@ -292,11 +292,62 @@
             }
         });
 
+        $('input[name=opt2radio]').on('change', function () {
+            var opt1radio = document.getElementsByName('opt1radio');
+            //var val = "";
+            for (var i = 0; i < opt1radio.length; i++) {
+                if (opt1radio[i].checked) {
+
+                } else {
+                    if (Number(burntradio[i].value) == 0)
+                        $("#eatennone").val(">0")
+                    else
+                        $("#burntnone").val(">0")
+                }
+            }
+        });
+
         function returnSign(id) {
             var msg = "";
             id == 2 ? msg = "<" : id == 0 ? msg = ">" : msg = "=";
             return msg;
         }
+
+        function returnsymbol(symbol) {
+            var msg = 0;
+            symbol == "<" ? msg = 2 : symbol == ">" ? msg = 0 : msg = 1;
+            return msg;
+        }
+
+        $(document).ready(function () {
+            var pathname = decodeURIComponent(window.location.href);
+            if (pathname.substring(pathname.lastIndexOf("start") + 6, pathname.lastIndexOf("end") - 1)) {
+                $("#StartDate").datepicker().datepicker('setDate', String(pathname.substring(pathname.lastIndexOf("start") + 6, pathname.lastIndexOf("end") - 1)));
+                $("#EndDate").datepicker().datepicker('setDate', pathname.substring(pathname.lastIndexOf("end") + 4, pathname.lastIndexOf("opt1radio") - 1));
+            } else setDate();
+
+            $("#eaten").val(pathname.substring(pathname.indexOf("eaten") + 6, pathname.indexOf("burnt") - 1).substring(1));
+            $("#burnt").val(pathname.substring(pathname.indexOf("burnt") + 6, pathname.indexOf("eatenradio") - 1).substring(1));
+            var burntradio = document.getElementsByName('burntradio');
+            var returnmsg = returnsymbol(pathname.substring(pathname.indexOf("eaten") + 6, pathname.indexOf("burnt") - 1).slice(0,1));
+            var val = returnsymbol(pathname.substring(pathname.indexOf("burnt") + 6, pathname.indexOf("eatenradio") - 1).slice(0, 1));
+            for (var i = 0; i < burntradio.length; i++) {
+                if (burntradio[i].value == val) {
+                    burntradio[i].checked = true;
+                } else {
+                    burntradio[i].checked = false;
+                }
+            }
+
+            var eatenradio = document.getElementsByName('eatenradio');
+            for (var i = 0; i < burntradio.length; i++) {
+                if (eatenradio[i].value == returnmsg) {
+                    eatenradio[i].checked = true;
+                } else {
+                    eatenradio[i].checked = false;
+                }
+            }
+        });
 
     </script>
 }
