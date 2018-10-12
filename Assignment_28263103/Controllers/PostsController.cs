@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -34,7 +35,7 @@ namespace Assignment_28263103.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult AdminIndex()
         {
-            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
             List<Post> list_A = new List<Post>();
             DataTable dt = new DataTable();
             SqlCommand myCommand = new SqlCommand("SELECT * FROM Posts ", con);
@@ -61,7 +62,7 @@ namespace Assignment_28263103.Controllers
         public ActionResult Approve(int? id , string email)
         {
             int updated;
-            SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
             string updSql = "Update Posts set Approved='true' where id=" + id ;
             con.Open();
             using (var cmd = new SqlCommand(updSql, con))

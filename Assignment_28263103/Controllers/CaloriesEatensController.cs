@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using Assignment_28263103.Models;
 using Microsoft.AspNet.Identity;
+using System.Configuration;
 
 namespace Assignment_28263103.Controllers
 {
@@ -25,8 +26,7 @@ namespace Assignment_28263103.Controllers
             try
             {
                 var userId = User.Identity.GetUserId();
-
-                SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+                SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
                 string id = User.Identity.GetUserName().ToString();
 
                 List<CaloriesEaten> list_A = new List<CaloriesEaten>();
@@ -105,7 +105,7 @@ namespace Assignment_28263103.Controllers
             try
             {
                 var userId = User.Identity.GetUserId();
-                SqlConnection con = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+                SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
                 string id = User.Identity.GetUserName().ToString();
 
                 //string[] startarray = startDate.Split('/');
