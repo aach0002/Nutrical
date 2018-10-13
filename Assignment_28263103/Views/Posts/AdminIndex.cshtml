@@ -8,20 +8,25 @@
     <div>
         <table id="tblData" class="table">
             <tr>
-                <th style="width:10%">
+                <th onclick="sortTables()" style="width:10%; cursor:pointer">
                     Id
+                    <span id="id" onclick='return false;' class="glyphicon"></span>
                 </th>
-                <th style="width:10%">
+                <th onclick="sortTable(1)" style="width:10%; cursor:pointer">
                     Title
+                    <span id="title" onclick='return false;' class="glyphicon"></span>
                 </th>
-                <th style="width:50%">
+                <th onclick="sortTable(2)" style="width:50%; cursor:pointer">
                     Story
+                    <span id="story" onclick='return false;' class="glyphicon"></span>
                 </th>
-                <th style="width:10%">
+                <th onclick="sortTable(3)" style="width:10%; cursor:pointer">
                     Approved
+                    <span id="app" onclick='return false;' class="glyphicon"></span>
                 </th>
-                <th style="width:10%">
+                <th onclick="sortTable(4)" style="width:10%; cursor:pointer">
                     User
+                    <span id="use" onclick='return false;' class="glyphicon"></span>
                 </th>
                 <th style="width:10%"></th>
             </tr>
@@ -51,7 +56,7 @@
                     </td>
                 } else
                 {
-                    <td></td>
+                    <td><button class="btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal2" data-id="@item.id" data-email="@item.UserId">Remove Post</button></td>
                 }
 
             </tr>
@@ -77,6 +82,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                 <button type="button" class="btn btn-primary" onclick="myclick();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Confirm</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="word-wrap: break-word;">
+                <p id="modelText">Are you sure you want to delete the post.</p>
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="deleteClick();">Yes</button>
             </div>
         </div>
     </div>
@@ -126,6 +152,12 @@
             email = button.data('email');
         });
 
+        $('#exampleModal2').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            id = button.data('id');
+            email = button.data('email');
+        });
+
         function myclick() {
             //alert(12345);
             var url = '@Url.Action("Approve", "Posts", new { id = "USER_ID" , email = "email_ID" })';
@@ -134,6 +166,171 @@
             //alert(url); //just for debugging
             window.location.href = url;
         }
+
+        function deleteClick() {
+            //alert(12345);
+            var url = '@Url.Action("DisapprovePost", "Posts", new { id = "USER_ID" , email = "email_ID" })';
+            url = url.replace("USER_ID", id);
+            url = url.replace("email_ID", email);
+            alert(url); //just for debugging
+            //return true();
+            window.location.href = url;
+        }
+        var dir = true;
+        function sortTables() {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("tblData");
+            switching = true;
+            dir = "asc";
+            //console.log(table.rows);
+            /*Make a loop that will continue until
+            no switching has been done:*/
+            while (switching) {
+                //start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /*Loop through all table rows (except the
+                first, which contains table headers):*/
+                for (i = 1; i < (rows.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /*Get the two elements you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].getElementsByTagName("TD")[0];
+                    y = rows[i + 1].getElementsByTagName("TD")[0];
+                    //check if the two rows should switch place:
+                    if (dir == "asc") {
+                        if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    /* If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again. */
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+                $("#title").removeClass("glyphicon-sort-by-attributes");
+                $("#story").removeClass("glyphicon-sort-by-attributes");
+                $("#app").removeClass("glyphicon-sort-by-attributes");
+                $("#use").removeClass("glyphicon-sort-by-attributes");
+                $("#use").removeClass("glyphicon-sort-by-attributes-alt"); $("#app").removeClass("glyphicon-sort-by-attributes-alt"); $("#story").removeClass("glyphicon-sort-by-attributes-alt"); $("#title").removeClass("glyphicon-sort-by-attributes-alt"); $("#id").removeClass("glyphicon-sort-by-attributes-alt"); $("#id").removeClass("glyphicon-sort-by-attributes");
+                if (dir == "desc") {
+                    $("#id").removeClass("glyphicon-sort-by-attributes");
+                    $("#id").addClass("glyphicon-sort-by-attributes-alt");
+                } else {
+                    $("#id").removeClass("glyphicon-sort-by-attributes-alt");
+                    $("#id").addClass("glyphicon-sort-by-attributes");
+                }
+            }
+        }
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("tblData");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until
+            no switching has been done: */
+            while (switching) {
+                // Start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /* Loop through all table rows (except the
+                first, which contains table headers): */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // Start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare,
+                    one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /* Check if the two rows should switch place,
+                    based on the direction, asc or desc: */
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch
+                    and mark that a switch has been done: */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    // Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                } else {
+                    /* If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again. */
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+            $("#title").removeClass("glyphicon-sort-by-attributes");
+            $("#story").removeClass("glyphicon-sort-by-attributes");
+            $("#app").removeClass("glyphicon-sort-by-attributes");
+            $("#use").removeClass("glyphicon-sort-by-attributes");
+            $("#use").removeClass("glyphicon-sort-by-attributes-alt"); $("#app").removeClass("glyphicon-sort-by-attributes-alt"); $("#story").removeClass("glyphicon-sort-by-attributes-alt"); $("#title").removeClass("glyphicon-sort-by-attributes-alt"); $("#id").removeClass("glyphicon-sort-by-attributes-alt"); $("#id").removeClass("glyphicon-sort-by-attributes");
+            if (dir == "desc") {
+                if (n == 1) {
+                    $("#title").removeClass("glyphicon-sort-by-attributes");
+                    $("#title").addClass("glyphicon-sort-by-attributes-alt");
+                } else if (n == 2) {
+                    $("#story").removeClass("glyphicon-sort-by-attributes");
+                    $("#story").addClass("glyphicon-sort-by-attributes-alt");
+                } else if (n == 3) {
+                    $("#app").removeClass("glyphicon-sort-by-attributes");
+                    $("#app").addClass("glyphicon-sort-by-attributes-alt");
+                } else if (n == 4) {
+                    $("#use").removeClass("glyphicon-sort-by-attributes");
+                    $("#use").addClass("glyphicon-sort-by-attributes-alt");
+                }
+            } else {
+                if (n == 1) {
+                    $("#title").removeClass("glyphicon-sort-by-attributes-alt");
+                    $("#title").addClass("glyphicon-sort-by-attributes");
+                } else if (n == 2) {
+                    $("#story").removeClass("glyphicon-sort-by-attributes-alt");
+                    $("#story").addClass("glyphicon-sort-by-attributes");
+                } else if (n == 3) {
+                    $("#app").removeClass("glyphicon-sort-by-attributes-alt");
+                    $("#app").addClass("glyphicon-sort-by-attributes");
+                } else if (n == 4) {
+                    $("#use").removeClass("glyphicon-sort-by-attributes-alt");
+                    $("#use").addClass("glyphicon-sort-by-attributes");
+                }
+            }
+        }
+
     </script>
 }
 

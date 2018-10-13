@@ -38,9 +38,7 @@
                     <h4 class="alert-heading">Error!!!</h4>
                 </div>
                 <div class="col-xs-3">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    
                 </div>
             </div>
             <div class="">
@@ -65,16 +63,17 @@
                 @*@Html.ActionLink("NutriCal", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active" id="about">@Html.ActionLink("About Us", "About", "Home")</li>
+                <ul class="nav navbar-nav" id="nav">
+                    <li id="about">@Html.ActionLink("About Us", "About", "Home")</li>
                     @if (this.User.IsInRole("Admin"))
                     {
-                        <li>@Html.ActionLink("Approve Stories", "adminindex", "Posts")</li>
+                        <li id="approve">@Html.ActionLink("Approve Stories", "adminindex", "Posts")</li>
+                        <li id="userlist">@Html.ActionLink("User List", "UsersList", "Posts")</li>
                     }
                     else if (User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Track Calories", "Index", "CaloriesEatens")</li>
-                        <li>@Html.ActionLink("Stories", "Index", "Posts")</li>
+                        <li id="calories">@Html.ActionLink("Track Calories", "Index", "CaloriesEatens")</li>
+                        <li id="stories">@Html.ActionLink("Stories", "Index", "Posts")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -99,6 +98,22 @@
     <script>
         $(".alert").delay(5000).slideUp(200, function () {
             $(this).alert('close');
+        });
+
+        $(document).ready(function () {
+            var url = window.location.href;
+            //console.log(url, url.indexOf("About"));
+            $(".nav").find(".active").removeClass("active");
+            if (url.indexOf("About") > -1)
+                $('#about').addClass("active");
+            else if (url.indexOf("adminindex") > -1)
+                $('#approve').addClass("active");
+            else if (url.indexOf("UsersList") > -1)
+                $('#userlist').addClass("active");
+            else if (url.indexOf("CaloriesEatens") > -1)
+                $('#calories').addClass("active");
+            else if (url.indexOf("Posts") > -1)
+                $('#stories').addClass("active");
         });
     </script>
 </body>

@@ -51,7 +51,7 @@ namespace Assignment_28263103.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UserId,Height,Age,Weight")] UserDetail userDetail)
+        public ActionResult Create([Bind(Include = "UserId,FirstName,LastName,Height,Age,Weight")] UserDetail userDetail)
         {
             if (ModelState.IsValid)
             {

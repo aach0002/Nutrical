@@ -1,0 +1,126 @@
+﻿@model IEnumerable<Assignment_28263103.Models.Post>
+
+@{
+    ViewBag.Title = "Index";
+}
+<br />
+<div class="row">
+    <div>
+        <table id="tblData" class="table">
+            <tr>
+                <th style="width:10%">
+                    Id
+                </th>
+                <th style="width:10%">
+                    Email
+                </th>
+                <th style="width:10%">
+                    Name
+                </th>
+
+                <th style="width:10%"></th>
+            </tr>
+
+            @foreach (var item in ViewBag.list)
+            {
+            <tr>
+                <td style="width:10%">
+                    @item.Id
+                </td>
+                <td style="width:10%">
+                    @item.Email
+                </td>
+                <td style="width:10%">
+                    @item.FirstName  @item.LastName
+                </td>
+                <td style="width:10%">
+                    <button class="btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal" data-id="@item.Id" data-email="@item.Email">Delete</button>
+                </td>
+            </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Confirm</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="word-wrap: break-word;">
+                <p id="modelText">Are you sure you want to <strong>delete</strong> the user? <br /><br />All <strong>details</strong> related to the <strong>user</strong> will be deleted.</p>
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="myclick();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/Chart.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var totalRows = $('#tblData').find('tbody tr:has(td)').length;
+            var recordPerPage = 5;
+            var totalPages = Math.ceil(totalRows / recordPerPage);
+            var $pages = $('<div id="pages"></div>');
+            for (i = 0; i < totalPages; i++) {
+                $('<span class="pageNumber">&nbsp;' + (i + 1) + '</span>').appendTo($pages);
+            }
+            $pages.appendTo('#tblData');
+
+            $('.pageNumber').hover(
+                function () {
+                    $(this).addClass('focus');
+                },
+                function () {
+                    $(this).removeClass('focus');
+                }
+            );
+
+            $('table').find('tbody tr:has(td)').hide();
+            var tr = $('table tbody tr:has(td)');
+            for (var i = 0; i <= recordPerPage - 1; i++) {
+                $(tr[i]).show();
+            }
+            $('span').click(function (event) {
+                $('#tblData').find('tbody tr:has(td)').hide();
+                var nBegin = ($(this).text() - 1) * recordPerPage;
+                var nEnd = $(this).text() * recordPerPage - 1;
+                for (var i = nBegin; i <= nEnd; i++) {
+                    $(tr[i]).show();
+                }
+            });
+        });
+        var id = 0;
+        var email = "";
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            id = button.data('id');
+            email = button.data('email');
+        });
+
+        function myclick()
+        {
+            //alert(12345);
+            var url = '@Url.Action("DeleteUser", "Posts", new { id = "USER_ID" , email = "email_ID" })';
+            url = url.replace("USER_ID", id);
+            url = url.replace("email_ID", email);
+            //alert(url); //just for debugging
+            window.location.href = url;
+        }
+    </script>
+}
+
+    <script>
+
+        
+    </script>

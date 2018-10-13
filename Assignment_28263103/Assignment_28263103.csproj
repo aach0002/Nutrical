@@ -236,6 +236,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Calories.cs" />
     <Compile Include="Models\CaloriesBurnt.cs" />
+    <Compile Include="Models\Users.cs" />
     <Compile Include="Models\CaloriesEaten.cs" />
     <Compile Include="Models\CombinedCalories.cs" />
     <Compile Include="Models\Comment.cs" />
@@ -395,6 +396,7 @@
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Posts\AdminIndex.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
+    <Content Include="Views\Posts\UsersList.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

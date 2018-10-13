@@ -19,7 +19,7 @@ namespace Assignment_28263103.Controllers
     public class PostsController : Controller
     {
         private Comments db = new Comments();
-        private const String API_KEY = "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";
+        private const String API_KEY = "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";
 
         // GET: Posts
         public ActionResult Index()
@@ -105,6 +105,104 @@ namespace Assignment_28263103.Controllers
             var msg = MailHelper.CreateSingleEmail(from, to, " NUTRICAL Post Approval ", plainTextContent, htmlContent);
             var response = client.SendEmailAsync(msg);
             return Redirect("../adminindex");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult DisapprovePost(int? id, string email)
+        {
+            int updated;
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+            string updSql = "Update Posts set Approved='none' where id=" + id;
+            con.Open();
+            using (var cmd = new SqlCommand(updSql, con))
+            {
+                updated = cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            TempData["success"] = "Post has been deleted from the active list and Email has been sent";
+
+            string mailid = "";
+            string title = "";
+            string content = "";
+            SqlConnection con1 = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\Authentication.mdf;Integrated Security=True");
+            DataTable dt = new DataTable();
+            SqlCommand myCommand = new SqlCommand("Select Email from AspNetUsers where Id='" + email + "'", con1);
+            con1.Open();
+            SqlDataAdapter da = new SqlDataAdapter(myCommand);
+            da.Fill(dt);
+            if (dt.Rows.Count > 0)
+            {
+                mailid = Convert.ToString(dt.Rows[0]["Email"]);
+            }
+            DataTable dt2 = new DataTable();
+            SqlCommand myCommand1 = new SqlCommand("Select * from Posts where id = " + id, con1);
+            SqlDataAdapter da1 = new SqlDataAdapter(myCommand1);
+            da1.Fill(dt2);
+            if (dt2.Rows.Count > 0)
+            {
+                title = Convert.ToString(dt2.Rows[0]["Title"]);
+                content = Convert.ToString(dt2.Rows[0]["Post"]);
+            }
+            con1.Close();
+            da.Dispose();
+
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("nutricalinfo@gmail.com", "NUTRICAL Post Deletion");
+            var to = new EmailAddress(mailid, "");
+            var plainTextContent = "Information !!! Your post has been deleted by the Nutrical Admin. It will be available for all the users to read.";
+            var htmlContent = "<p>Hi User,</p><p>" + plainTextContent + "</p><h1>" + title + "</h1><p>" + content + "</p><p>Regards, Nutrical Admin</p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, " NUTRICAL Post Approval ", plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
+            return Redirect("../adminindex");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult UsersList()
+        {
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+            List<UserList> list_A = new List<UserList>();
+            DataTable dt = new DataTable();
+            SqlCommand myCommand = new SqlCommand("SELECT a.Id, a.Email, b.FirstName , b.LastName FROM AspNetUsers a INNER JOIN UserDetails b ON a.Id=b.UserId INNER JOIN AspNetUserRoles c ON a.Id<>c.UserId", con);
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter(myCommand);
+            da.Fill(dt);
+            list_A = (from DataRow dr in dt.Rows
+                      select new UserList()
+                      {
+                          Id = dr["Id"].ToString().Trim(),
+                          Email = dr["Email"].ToString().Trim(),
+                          FirstName = dr["FirstName"].ToString().Trim(),
+                          LastName = dr["LastName"].ToString().Trim()
+                      }).ToList();
+            con.Close();
+            da.Dispose();
+            ViewBag.list = list_A.ToArray();
+
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult DeleteUser(string id, string email)
+        {
+            int updated;
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+            string updSql = "DELETE FROM AspNetUsers WHERE Id = '" + id + "'";
+            con.Open();
+            using (var cmd = new SqlCommand(updSql, con))
+            {
+                updated = cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            TempData["success"] = "User Deleted Succesfully";
+
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("nutricalinfo@gmail.com", "NUTRICAL Post Approval");
+            var to = new EmailAddress(email, "");
+            var plainTextContent = "Congratulations !!! Your have been deleted by the Nutrical Admin. Please regiser again to continue using the website.";
+            var htmlContent = "<p>Hi User,</p><p>" + plainTextContent + "</p><p>Regards, Nutrical Admin</p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, " NUTRICAL Delete ", plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
+            return Redirect("../UsersList");
         }
 
         // GET: Posts/Details/5

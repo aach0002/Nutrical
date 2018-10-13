@@ -239,7 +239,7 @@ textarea {
 .navbar-nav > li > a {
     color: ghostwhite;
     font-size: 20px;
-    line-height: 60px;
+    line-height: 50px;
 }
 
 .navbar-fixed-top {
@@ -254,9 +254,9 @@ textarea {
 }
 
 .nav > li > a:hover, .nav > li > a:focus {
-    background-color: #f05f40;
-    color: white;
-    line-height: 40px;
+    background-color: ghostwhite;
+    color: #f05f40;
+    line-height: 50px;
 }
 
 .navbar-brand {
@@ -562,4 +562,8 @@ post .abth4 {
 
 .radio-inline{
     margin-left : 0px  !important;
+}
+
+.navbar #nav > .active > a {
+    background: #f05f40;
 }
