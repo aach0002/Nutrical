@@ -37,7 +37,7 @@
                 <textarea class="form-control" id="exampleFormControlTextarea1" onblur="blurFunc()" rows="6"></textarea>
                 <br />
                 <form enctype="multipart/form-data">
-                    <input id="upload" type=file accept="text/html" name="files[]" tooltip="Choose the file to ennter the text and edit." size=30>
+                    <input id="upload" class="btn btn-info" type=file accept="text/html" name="files[]" tooltip="Choose the file to ennter the text and edit." size=30>
                 </form>
                 @Html.EditorFor(model => model.Post1, new { htmlAttributes = new { @class = "", @style = "display:none" } })
                 @Html.ValidationMessageFor(model => model.Post1, "", new { @class = "text-danger" })
@@ -85,10 +85,6 @@
 
     document.getElementById('upload').addEventListener('change', handleFileSelect, false);
 </script>
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

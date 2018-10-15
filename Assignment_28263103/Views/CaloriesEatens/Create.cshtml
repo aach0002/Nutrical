@@ -42,7 +42,7 @@
                     <option value="2">Dinner</option>
                     <option value="3">Others</option>
                 </select>
-                @Html.EditorFor(model => model.Type, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Type, new { htmlAttributes = new { @class = "", @style = "display:none" } })
                 @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
             </div>
         </div>
