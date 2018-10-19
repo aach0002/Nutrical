@@ -38,7 +38,7 @@
                     <h4 class="alert-heading">Error!!!</h4>
                 </div>
                 <div class="col-xs-3">
-                    
+
                 </div>
             </div>
             <div class="">
@@ -69,6 +69,7 @@
                     {
                         <li id="approve">@Html.ActionLink("Approve Stories", "adminindex", "Posts")</li>
                         <li id="userlist">@Html.ActionLink("User List", "UsersList", "Posts")</li>
+                        <li id="news">@Html.ActionLink("News Letter", "NewsLetter", "Posts")</li>
                     }
                     else if (User.Identity.IsAuthenticated)
                     {
@@ -94,6 +95,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/script")
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     @RenderSection("scripts", required: false)
     <script>
         $(".alert").delay(5000).slideUp(200, function () {
@@ -108,6 +110,8 @@
                 $('#about').addClass("active");
             else if (url.indexOf("adminindex") > -1)
                 $('#approve').addClass("active");
+            else if (url.indexOf("NewsLetter") > -1)
+                $('#news').addClass("active");
             else if (url.indexOf("UsersList") > -1)
                 $('#userlist').addClass("active");
             else if (url.indexOf("CaloriesEatens") > -1)

@@ -5,6 +5,7 @@ namespace Assignment_28263103.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Web.Mvc;
 
     public partial class Post
     {
@@ -20,6 +21,7 @@ namespace Assignment_28263103.Models
 
         [Column("Post")]
         [Required]
+        [AllowHtml]
         public string Post1 { get; set; }
 
         [Required]

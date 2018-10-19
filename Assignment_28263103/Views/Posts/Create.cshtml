@@ -11,87 +11,101 @@
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Post</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+<div class="form-horizontal">
+    <h4>Post</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "" } })
-                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Post1, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10 col-md-offset-2">
-                <textarea class="form-control" id="exampleFormControlTextarea1" onblur="blurFunc()" rows="6"></textarea>
-                <br />
-                <form enctype="multipart/form-data">
-                    <input id="upload" class="btn btn-info" type=file accept="text/html" name="files[]" tooltip="Choose the file to ennter the text and edit." size=30>
-                </form>
-                @Html.EditorFor(model => model.Post1, new { htmlAttributes = new { @class = "", @style = "display:none" } })
-                @Html.ValidationMessageFor(model => model.Post1, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.Approved, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Approved, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Approved, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Cancel" class="btn btn-default" onclick="location.href='@Url.Action("Index", "Posts")'" />
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "" } })
+            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Post1, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10 col-md-offset-2">
+
+            @Html.EditorFor(model => model.Post1, new { htmlAttributes = new { @class = "" } })
+            @Html.ValidationMessageFor(model => model.Post1, "", new { @class = "text-danger" })
+            
+            <br />
+            <textarea class="form-control" id="exampleFormControlTextarea1" style="display:none" onblur="blurFunc()" rows="6"></textarea>
+            <form enctype="multipart/form-data">
+                <input id="upload" class="btn btn-info" type=file name="files[]" tooltip="Choose the file to ennter the text and edit." size=30>
+            </form>
+        </div>
+    </div>
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.Approved, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Approved, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Approved, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Cancel" class="btn btn-default" onclick="location.href='@Url.Action("Index", "Posts")'" />
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </div>
+    <br /><br />
+</div>
 }
 
 
 <script>
-    function handleFileSelect(evt) {
-        var files = evt.target.files; // FileList object
-
-        // use the 1st file from the list
-        f = files[0];
-
-        var reader = new FileReader();
-
-        // Closure to capture the file information.
-        reader.onload = (function (theFile) {
-            return function (e) {
-
-                jQuery('#exampleFormControlTextarea1').val(e.target.result);
-            };
-        })(f);
-
-        // Read in the image file as a data URL.
-        reader.readAsText(f);
-    }
-
-    document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+    
 </script>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
     <script>
-        function blurFunc() {
+        function blurFunc(vals) {
             var x = document.getElementById("exampleFormControlTextarea1");
             $("#Post1").val(x.value);
+            tinymce.get('Post1').setContent('<p> ' + vals + '</p>');
         }
+        tinymce.init({
+            selector: '#Post1',
+        });
+        function handleFileSelect(evt) {
+            var filename = $("#upload").val();
+            var extension = filename.replace(/^.*\./, '');
+
+            if (extension.toLowerCase() == 'txt') {
+                var files = evt.target.files; // FileList object
+
+                f = files[0];
+                var reader = new FileReader();
+                reader.onload = (function (theFile) {
+                    return function (e) {
+
+                        jQuery('#exampleFormControlTextarea1').val(e.target.result);
+                        blurFunc(e.target.result);
+                    };
+                })(f);
+
+                // Read in the image file as a data URL.
+                reader.readAsText(f);
+            }
+            else {
+                $.notify("Please upload only a .txt file!", "error");
+            }
+        }
+        
+        document.getElementById('upload').addEventListener('change', handleFileSelect, false);
     </script>
 }
+    

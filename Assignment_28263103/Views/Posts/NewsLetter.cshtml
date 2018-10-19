@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Assignment_28263103.Models.Post>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<h4>News Letter</h4>
+<textarea id="newslettereditor"></textarea>
+<button type="button" class="btn btn-primary" onclick="sendLetter();">Send News Letter</button>
+@section Scripts {
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
+    <script>
+        function sendLetter() {
+            var wysiwyg = encodeURIComponent(tinymce.get('newslettereditor').getContent().toString());
+            console.log(wysiwyg);
+            //console.log(12345, tinymce.get('newslettereditor').getContent()); return true;
+
+            var url = '@Url.Action("SendNews", "Posts", new { news = "USER_ID"})';
+            url = url.replace("USER_ID", wysiwyg);
+            console.log(url); return true;
+            window.location.href = url;
+        }
+
+        tinymce.init({
+            selector: '#newslettereditor',
+            plugins: 'image code',
+            toolbar: 'undo redo | link image | code',
+            // enable title field in the Image dialog
+            image_title: true,
+            // enable automatic uploads of images represented by blob or data URIs
+            automatic_uploads: true,
+            // add custom filepicker only to Image dialog
+            file_picker_types: 'image',
+            file_picker_callback: function (cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.onchange = function () {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+
+                    reader.onload = function () {
+                        var id = 'blobid' + (new Date()).getTime();
+                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(',')[1];
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+
+                        // call the callback and populate the Title field with the file name
+                        cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                input.click();
+            }
+        });
+
+
+    </script>
+}

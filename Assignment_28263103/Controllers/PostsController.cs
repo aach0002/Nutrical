@@ -205,6 +205,25 @@ namespace Assignment_28263103.Controllers
             return Redirect("../UsersList");
         }
 
+        [Authorize(Roles = "Admin")]
+        public ActionResult NewsLetter()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult SendNews(string news)
+        {
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("nutricalinfo@gmail.com", "NUTRICAL Post Approval");
+            var to = new EmailAddress("", "");
+            var plainTextContent = "Congratulations !!! Your have been deleted by the Nutrical Admin. Please regiser again to continue using the website.";
+            var htmlContent = "<p>Hi User,</p><p>" + plainTextContent + "</p><p>Regards, Nutrical Admin</p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, " NUTRICAL Delete ", plainTextContent, htmlContent);
+            string letter = news;
+            return null;
+        }
+
         // GET: Posts/Details/5
         public ActionResult Details(int? id)
         {
